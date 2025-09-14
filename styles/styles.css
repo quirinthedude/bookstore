@@ -164,196 +164,92 @@
   /* evtl. Standardabstände neutralisieren */
 }
 
-#book-dialog::backdrop {
-  background: rgba(0, 0, 0, .5);
-}
-
-/* .dialog-card {
-  display: grid;
-  gap: 16px;
-  grid-template-columns: 180px 1fr;
-  align-items: start;
-  padding: 16px;
-  border: none;
-  background: var(--paper, #fffaf0);
-  border-radius: 12px;
-} */
-
-.dialog-card .close {
-  position: absolute;
-  top: 6px;
-  right: 10px;
-  border: 0;
-  background: none;
-  font-size: 20px;
-  cursor: pointer;
-}
-
-.dialog-content img.cover {
-  width: 180px;
-  border-radius: 8px;
-}
-
-.dialog-content .meta {
-  list-style: none;
-  margin: 0;
+/* Dialog selbst */
+#book-dialog {
+  width: 75vw;          /* 75% Bildschirmbreite */
+  max-width: 1200px;    /* obere Grenze */
+  max-height: 90dvh;    /* nicht höher als der Bildschirm */
+  margin: auto;         /* zentriert (wichtig nach Reset) */
   padding: 0;
+  border: none;
+  border-radius: 16px;
+  overflow: hidden;     /* runde Ecken */
 }
 
-.dialog-content .meta li {
-  margin: 2px 0;
+/* Innenaufbau */
+.dialog-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;  /* links/rechts je 50% */
+  gap: 24px;
+  padding: 24px;
+  height: 100%;
+  box-sizing: border-box;
 }
 
+/* linke Spalte */
+.dialog-info {
+  display: grid;
+  grid-template-rows: auto auto auto auto auto 1fr; /* Button, Titelzeile, Autor, Jahr, Genre, Summary */
+  gap: 12px;
+}
+
+/* Warenkorb-Button */
+.dialog-info .cart-btn {
+  background: #2a7;       /* grün, Beispiel */
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  padding: 12px;
+  cursor: pointer;
+  width: 100%;
+  text-align: center;
+}
+
+/* Titel + Likes nebeneinander */
+.dialog-info .title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dialog-info h2 { margin: 0; font-size: 1.5rem; }
+.dialog-info .likes { font-size: 1.2rem; }
+
+/* rechte Spalte: Cover */
+.dialog-card img.cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;    /* füllt rechte Spalte */
+  border-radius: 12px;
+}
+
+/* Responsive: auf schmalen Screens einspaltig */
 @media (max-width: 640px) {
   .dialog-card {
     grid-template-columns: 1fr;
   }
-
-  .dialog-content img.cover {
-    width: 100%;
-  }
-
-  #book-dialog {
-    width: 95vw;
-  }
-
-  .dialog-card {
-    grid-template-columns: 1fr;
-  }
-
-  .dialog-content img.cover {
+  .dialog-card img.cover {
     width: 100%;
     height: auto;
   }
 }
+button.close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
 
-#book-dialog {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 75vw;
-  max-width: 1200px;
-  max-height: 90dvh;
-  padding: 0;
+  background: none;
   border: none;
-  border-radius: 16px;
-  overflow: auto;
-  margin: auto;
-}
-
-.dialog-card {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-  padding: 24px;
-  align-items: start;
-  overflow: auto;
-  /* bei viel Text */
-}
-
-
-/* Rechte Spalte: Bild */
-.dialog-card img.cover {
-  width: 100%;
-  height: auto;
-  border-radius: 12px;
-  object-fit: cover;
-}
-
-/* Linke Spalte: Infos */
-.dialog-info {
-  display: grid;
-  grid-template-rows: auto auto auto auto auto 1fr auto;
-  gap: 12px;
-}
-
-/* In den Warenkorb Button */
-.dialog-info .cart-btn {
-  background: var(--primary, #2a7);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  font-size: 1.1rem;
-  padding: 12px;
-  cursor: pointer;
-  width: 100%;       /* langer Button */
-  text-align: center;
-}
-
-/* Titel + Likes in einer Zeile */
-.dialog-info .title-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.dialog-info h2 {
-  margin: 0;
   font-size: 1.5rem;
-}
-
-.dialog-info .likes {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  font-size: 1.2rem;
-}
-
-.dialog-info .summary {
-  line-height: 1.4;
-  color: #333;
-}
-
-
-/* Rechte Spalte: Bild */
-.dialog-card img.cover {
-  width: 100%;
-  height: auto;
-  border-radius: 12px;
-  object-fit: cover;
-}
-
-/* Linke Spalte: Infos */
-.dialog-info {
-  display: grid;
-  grid-template-rows: auto auto auto auto auto 1fr auto;
-  gap: 12px;
-}
-
-/* In den Warenkorb Button */
-.dialog-info .cart-btn {
-  background: var(--primary, #2a7);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  font-size: 1.1rem;
-  padding: 12px;
+  font-weight: bold;
+  line-height: 1;
   cursor: pointer;
-  width: 100%;       /* langer Button */
-  text-align: center;
+
+  color: #666;
+  transition: color 0.2s;
 }
 
-/* Titel + Likes in einer Zeile */
-.dialog-info .title-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.dialog-info h2 {
-  margin: 0;
-  font-size: 1.5rem;
-}
-
-.dialog-info .likes {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  font-size: 1.2rem;
-}
-
-.dialog-info .summary {
-  line-height: 1.4;
-  color: #333;
+button.close:hover {
+  color: #000;
 }
