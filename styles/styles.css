@@ -91,13 +91,52 @@
   .sidebar{ display:none; }
 }
 
-/* Thumbnails (falls du schon Bilder einhängst) */
 .book-thumb{
   width:100%;
-  aspect-ratio: 3 / 4;
-  object-fit: cover;
+  object-fit: contain;
   object-position: center;
-  border-radius:10px;
+  border-radius: 8px;
   box-shadow: 0 1px 0 #00000018;
   border:1px solid #00000012;
 }
+
+.book-card {
+  display: grid;               
+  grid-template-rows: auto auto 1fr auto;  /* Bild, Titel, Flex-Lücke, Preis */
+  gap: 6px;
+}
+
+.book-card .price {
+  align-self: end;               /* nach unten */
+  justify-self: center;          /* mittig */
+  margin: 0;                     /* evtl. Standardabstände neutralisieren */
+}
+
+#book-dialog::backdrop { background: rgba(0,0,0,.5); }
+
+.dialog-card {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 180px 1fr;
+  align-items: start;
+  padding: 16px;
+  border: none;
+  background: var(--paper, #fffaf0);
+  border-radius: 12px;
+}
+
+.dialog-card .close {
+  position: absolute;
+  top: 6px; right: 10px;
+  border: 0; background: none; font-size: 20px; cursor: pointer;
+}
+
+.dialog-content img.cover { width: 180px; border-radius: 8px; }
+.dialog-content .meta { list-style: none; margin: 0; padding: 0; }
+.dialog-content .meta li { margin: 2px 0; }
+
+@media (max-width: 640px){
+  .dialog-card { grid-template-columns: 1fr; }
+  .dialog-content img.cover { width: 100%; }
+}
+

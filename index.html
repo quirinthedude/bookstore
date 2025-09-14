@@ -8,8 +8,6 @@
     <link rel="stylesheet" href="./styles/styles.css">
 
 </head>
-<body>
-    <!-- index.html (Gerüst) -->
 <body class="app">
   <header class="header">
     <img class="logo" src="./assets/img/logo-bookstore-red.png" alt="Bookstore" />
@@ -36,8 +34,20 @@
   </main>
 
   <footer class="footer">© Bookstore</footer>
+  
+  <dialog id="book-dialog">
+  <form method="dialog" class="dialog-card">
+    <button class="close" aria-label="Schließen">×</button>
+    <div class="dialog-content"><!-- wird per JS gefüllt --></div>
+    <menu>
+      <button value="close" class="btn btn-primary">Schließen</button>
+    </menu>
+  </form>
+</dialog>
+
+<script src="./scripts/books.js"></script>
+<script src="./scripts/script.js"></script>
 </body>
 
     
-</body>
 </html>
