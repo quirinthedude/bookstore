@@ -1,0 +1,28 @@
+*{
+    box-sizing: border-box;
+    margin: 0;
+    scroll-behavior: smooth;
+}
+
+body {
+    width: 100%;
+    max-width: 100vw;
+    padding-left: 2%;
+    padding-right: 2%;
+}
+
+a {
+    text-decoration: none;
+}
+
+.hidden {
+    display: none;
+}
+
+:root {
+  --color-bg: #f8f4e6;      /* vergilbtes Weiß, Grundfläche */
+  --color-text: #1a1a1a;    /* tiefes Schwarz für Schrift */
+  --color-accent-red: #b22222;  /* kräftiges Rot fürs Initial, Buttons */
+  --color-accent-gold: #d4af37; /* klassisches Gold für Zierelemente */
+  --color-accent-dark: #4a3c2a; /* dunkles Braun/Goldton für Tiefe */
+}
