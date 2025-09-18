@@ -1,44 +1,11 @@
-const DIALOG = document.getElementById('book-dialog');
+// scripts/script.js
+
+// --- DOM-Grundlagen -------------------------------------------------------
+const DIALOG  = document.getElementById('book-dialog');
 const CONTENT = DIALOG.querySelector('.dialog-content');
-const GRID = document.querySelector('.books-grid');
+const GRID    = document.querySelector('.books-grid');
 
-// Optional: Mini-Rate-Limit (10s)
-let lastPostAt = 0;
-
-// Delegierter Submit-Handler für Kommentar-Formulare
-document.addEventListener('submit', (e) => {
-  const form = e.target.closest('.comment-form');
-  if (!form) return;
-  e.preventDefault(); // NICHT den Dialog schließen
-
-  const now = Date.now();
-  if (now - lastPostAt < 10_000) {
-    alert('Bitte warte kurz, bevor du erneut postest.');
-    return;
-  }
-
-  const name = form.name.value.trim();
-  const text = form.comment.value.trim();
-  const slug = form.dataset.slug || '';
-
-  if (!name || !text || !slug) return;
-
-  // speichern (nur lokal)
-  saveLocalComment(slug, { name, comment: text });
-
-  // Felder leeren & Dialog neu rendern (damit der neue Kommentar erscheint)
-  form.reset();
-  lastPostAt = now;
-
-  // Finde das Buch neu und öffne nochmal (mit Merge)
-  const idx = books.findIndex(b => (b.slug || '') === slug);
-  if (idx !== -1) openByIndex(idx);
-});
-
-// Start: Bücher-Grid rendern
-renderThumbs();
-
-// --- Toasts ---------------------------------------------------------------
+// --- Toasts (dezente Einblendungen) ---------------------------------------
 function ensureToastHost() {
   let host = document.getElementById('toast-host');
   if (!host) {
@@ -58,13 +25,11 @@ function showToast(message, type = 'info', ms = 2500) {
   el.textContent = message;
 
   host.appendChild(el);
-
-  // Ein-/Ausblenden
   requestAnimationFrame(() => el.classList.add('in'));
-  const hideAt = setTimeout(() => el.classList.remove('in'), ms);
+
+  const hideAt   = setTimeout(() => el.classList.remove('in'), ms);
   const removeAt = setTimeout(() => el.remove(), ms + 400);
 
-  // vorzeitig schließen per Klick
   el.addEventListener('click', () => {
     clearTimeout(hideAt); clearTimeout(removeAt);
     el.classList.remove('in');
@@ -72,11 +37,59 @@ function showToast(message, type = 'info', ms = 2500) {
   });
 }
 
+// --- LocalStorage: Kommentare ---------------------------------------------
+const LS_KEY = 'bookstore_comments_v1';
+
+function loadLocalComments() {
+  try { return JSON.parse(localStorage.getItem(LS_KEY) || '{}'); }
+  catch { return {}; }
+}
+
+function saveLocalComment(slug, entry) {
+  const db = loadLocalComments();
+  (db[slug] ||= []).push(entry);
+  localStorage.setItem(LS_KEY, JSON.stringify(db));
+}
+
+function getMergedComments(b) {
+  const db = loadLocalComments();
+  const local = db[b.slug] || [];
+  return [...(b.comments || []), ...local];
+}
+
+// --- Rate-Limit pro Buch (Slug) -------------------------------------------
+const RATE_MS  = 10_000;                 // 10 Sekunden zwischen Posts je Buch
+const RATE_KEY = 'bookstore_rate_v1';
+
+function _rateDB() {
+  try { return JSON.parse(localStorage.getItem(RATE_KEY) || '{}'); }
+  catch { return {}; }
+}
+function _saveRateDB(db) {
+  localStorage.setItem(RATE_KEY, JSON.stringify(db));
+}
+function canPost(slug) {
+  const db = _rateDB();
+  const last = db[slug] || 0;
+  return (Date.now() - last) >= RATE_MS;
+}
+function stampPost(slug) {
+  const db = _rateDB();
+  db[slug] = Date.now();
+  _saveRateDB(db);
+}
+function secondsRemaining(slug) {
+  const db = _rateDB();
+  const last = db[slug] || 0;
+  const left = RATE_MS - (Date.now() - last);
+  return Math.max(0, Math.ceil(left / 1000));
+}
+
+// --- Render Liste (Thumbnails) --------------------------------------------
 function renderThumbs() {
-  // Karten per Template erzeugen (bookCard erwartet b und index)
   GRID.innerHTML = books.map((b, i) => bookCard(b, i)).join('');
 
-  // Click nur EINMAL binden
+  // Click-Delegation nur EINMAL binden
   if (!GRID.dataset.bound) {
     GRID.addEventListener('click', (e) => {
       const card = e.target.closest('.book-card');
@@ -88,47 +101,51 @@ function renderThumbs() {
   }
 }
 
+// --- Dialog öffnen ---------------------------------------------------------
 function openByIndex(i) {
   const b = books[i];
   if (!b) return;
 
-  // Merge initial + local comments für die Anzeige
   const bWithComments = { ...b, comments: getMergedComments(b) };
 
-  // Debug-Ausgabe (kannst du später löschen)
-  console.log("Öffne", b.slug, "Kommentare:", bWithComments.comments);
+  showToast(`„${bWithComments.name}“ geöffnet • ${bWithComments.comments.length} Kommentar(e)`, 'info', 1600);
 
-  // bookDialog(b) aus template.js generiert das Markup
-  CONTENT.innerHTML = bookDialog(bWithComments);
+  CONTENT.innerHTML = bookDialog(bWithComments); // wichtig: mit gemergten Kommentaren
   DIALOG.showModal();
 }
 
-// Klick aufs Backdrop -> schließen
+// Backdrop-Klick schließt
 DIALOG.addEventListener('click', (e) => {
   if (e.target === DIALOG) DIALOG.close();
 });
 
-// X-Button schließt via <form method="dialog"> automatisch
+// --- Kommentar-Submit (delegiert) -----------------------------------------
+document.addEventListener('submit', (e) => {
+  const form = e.target.closest('.comment-form');
+  if (!form) return;
+  e.preventDefault(); // Dialog NICHT schließen
 
-const LS_KEY = 'bookstore_comments_v1';
+  const name = form.name.value.trim();
+  const text = form.comment.value.trim();
+  const slug = form.dataset.slug || '';
+  if (!name || !text || !slug) return;
 
-// Kommentare aus localStorage lesen
-function loadLocalComments() {
-  try { return JSON.parse(localStorage.getItem(LS_KEY) || '{}'); }
-  catch { return {}; }
-}
+  // Rate-Limit pro Buch prüfen
+  if (!canPost(slug)) {
+    showToast(`Bitte warte ${secondsRemaining(slug)}s, bevor du erneut für dieses Buch postest.`, 'warn', 2200);
+    return;
+  }
 
-// Kommentar speichern (append)
-function saveLocalComment(slug, entry) {
-  const db = loadLocalComments();
-  db[slug] = db[slug] || [];
-  db[slug].push(entry);
-  localStorage.setItem(LS_KEY, JSON.stringify(db));
-}
+  // Speichern (nur lokal)
+  saveLocalComment(slug, { name, comment: text });
+  stampPost(slug);
+  form.reset();
+  showToast('Kommentar gespeichert (nur lokal)', 'success', 2200);
 
-// Kommentare eines Buchs mergen (initial + lokal)
-function getMergedComments(b) {
-  const db = loadLocalComments();
-  const local = db[b.slug] || [];
-  return [...(b.comments || []), ...local];
-}
+  // Dialog neu öffnen, damit der frische Kommentar sichtbar ist
+  const idx = books.findIndex(b => (b.slug || '') === slug);
+  if (idx !== -1) openByIndex(idx);
+});
+
+// --- Start -----------------------------------------------------------------
+renderThumbs();
