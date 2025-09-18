@@ -21,10 +21,13 @@ function bookCard(b, index) {
 
 // Dialog/Detailansicht – passt zur vorhandenen CSS-Struktur (.dialog-card, .dialog-info, .cover)
 function bookDialog(b) {
-  const comments = (b.comments?.length)
-    ? `<h4>Kommentare</h4><ul class="comments">${
-        b.comments.map(c => `<li><b>${escapeHTML(c.name)}:</b> ${escapeHTML(c.comment)}</li>`).join("")
-      }</ul>`
+  const commentsHTML = (b.comments?.length)
+    ? `<h4>Kommentare</h4>
+       <ul class="comments">
+         ${b.comments.map(c => `
+           <li><b>${escapeHTML(c.name)}:</b> ${escapeHTML(c.comment)}</li>
+         `).join("")}
+       </ul>`
     : "";
 
   return `
@@ -42,11 +45,29 @@ function bookDialog(b) {
         <p class="year">Erschienen: ${escapeHTML(String(b.publishedYear))}</p>
         <p class="genre">Genre: ${escapeHTML(b.genre)}</p>
 
-        <p class="summary">${escapeHTML(b.summary)}</p>
-        ${comments}
+        <!-- scrollbarer Bereich für Summary + Kommentare + Formular -->
+        <div class="dialog-scroll" tabindex="0">
+          <p class="summary">${escapeHTML(b.summary)}</p>
+          ${commentsHTML}
+
+          <!-- Kommentarformular (lokal, ohne Backend) -->
+          <form class="comment-form" data-slug="${escapeHTML(b.slug || '')}">
+            <h4>Neuen Kommentar schreiben</h4>
+            <label>
+              <span>Name</span>
+              <input name="name" required maxlength="40" placeholder="Dein Name">
+            </label>
+            <label>
+              <span>Kommentar</span>
+              <textarea name="comment" required maxlength="500" rows="3" placeholder="Sag uns, was du denkst…"></textarea>
+            </label>
+            <button class="btn btn-primary" type="submit">Kommentar senden</button>
+            <small class="hint">Wird lokal auf diesem Gerät gespeichert.</small>
+          </form>
+        </div>
       </div>
 
-      <!-- rechte Spalte -->
+      <!-- rechte Spalte: großes Cover -->
       <img class="cover" src="${b.image}" alt="${escapeHTML(b.alt || b.name)}">
     </div>
   `;

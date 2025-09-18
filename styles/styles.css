@@ -329,3 +329,53 @@ button.close:focus-visible {
   outline: 2px solid var(--color-accent-gold);
   outline-offset: 2px;
 }
+
+/* Kommentarformular: 2 Spalten, Label links – Felder rechts, top-aligned */
+.comment-form {
+  display: grid;
+  grid-template-columns: 140px 1fr; /* Labelbreite | Feld */
+  column-gap: 12px;
+  row-gap: 10px;
+
+  margin-top: 14px;      /* Abstand über dem Formular */
+  padding-top: 12px;
+  border-top: 1px solid #00000018;
+}
+
+.comment-form h4 {
+  grid-column: 1 / -1;   /* Überschrift über beide Spalten */
+  margin: 0 0 8px 0;     /* 1 Zeile Luft darunter */
+}
+
+.comment-form label {
+  display: contents;     /* Label-Text in Spalte 1, Felder in Spalte 2 */
+}
+
+.comment-form label > span {
+  align-self: start;      /* Label-Text oben ausrichten */
+  padding-top: 6px;       /* optische Linie mit Feldoberkante */
+}
+
+.comment-form input,
+.comment-form textarea {
+  font: inherit;
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #00000022;
+  border-radius: 8px;
+  background: #fffdf7;
+  resize: vertical;       /* Textarea höhenverstellbar */
+  line-height: 1.35;
+}
+
+.comment-form .btn[type="submit"] {
+  grid-column: 2;         /* Button unter den Feldern, rechtsbündig */
+  justify-self: start;    /* oder 'end' für rechtsbündig */
+  margin-top: 8px;        /* 1 Zeile Luft zum Eingabefeld */
+}
+
+.comment-form .hint {
+  grid-column: 2;         /* Hinweis unter dem Button / den Feldern */
+  color: #00000080;
+  margin-top: 4px;
+}
