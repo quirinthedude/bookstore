@@ -1,16 +1,12 @@
-// scripts/script.js - kommentierte Version
+// scripts/script_commented.js
 
 // --- DOM-Grundlagen -------------------------------------------------------
-// globale Referenzen auf die wichtigsten DOM-Elemente
-const DIALOG  = document.getElementById('book-dialog');           // <dialog>
+// Haupt-Referenzen
+const DIALOG  = document.getElementById('book-dialog');          // <dialog>
 const CONTENT = DIALOG.querySelector('.dialog-content');         // Container, in den wir bookDialog() setzen
-const GRID    = document.querySelector('.books-grid');           // Haupt-Grid für Karten
+const GRID    = document.querySelector('.books-grid');           // Grid mit den Karten
 
 // --- Toasts (dezente Einblendungen) ---------------------------------------
-/*
-  Kleine helper, die einen Toast-Host erstellen und kurz sichtbare Meldungen zeigen.
-  showToast('Text', 'success'|'warn'|'info', millis)
-*/
 function ensureToastHost() {
   let host = document.getElementById('toast-host');
   if (!host) {
@@ -30,14 +26,12 @@ function showToast(message, type = 'info', ms = 2500) {
   el.textContent = message;
 
   host.appendChild(el);
-  // Animation: add class in next frame
-  requestAnimationFrame(() => el.classList.add('in'));
+  requestAnimationFrame(() => el.classList.add('in')); // animiertes Einblenden
 
-  // automatisches Ausblenden / Entfernen
   const hideAt   = setTimeout(() => el.classList.remove('in'), ms);
   const removeAt = setTimeout(() => el.remove(), ms + 400);
 
-  // Klick schliesst sofort
+  // per Klick sofort schließen
   el.addEventListener('click', () => {
     clearTimeout(hideAt); clearTimeout(removeAt);
     el.classList.remove('in');
@@ -46,38 +40,29 @@ function showToast(message, type = 'info', ms = 2500) {
 }
 
 // --- LocalStorage: Kommentare ---------------------------------------------
-/*
-  LS_KEY: Key im localStorage.
-  loadLocalComments() liest das DB-Objekt { slug1: [...], slug2: [...] }
-  saveLocalComment(slug, entry) hängt einen neuen Kommentar an.
-  getMergedComments(b): kombiniert initiale (books.js) comments mit lokalen.
-*/
 const LS_KEY = 'bookstore_comments_v1';
 
+// liest DB-Objekt { slug1: [ {name, comment}, ... ], slug2: [...] }
 function loadLocalComments() {
   try { return JSON.parse(localStorage.getItem(LS_KEY) || '{}'); }
-  catch { return {}; } // defensive fallback
+  catch { return {}; }
 }
 
+// hängt Kommentar an ein slug an und speichert zurück
 function saveLocalComment(slug, entry) {
   const db = loadLocalComments();
-  (db[slug] ||= []).push(entry);            // ||= ist kurz für: db[slug] = db[slug] || []
+  (db[slug] ||= []).push(entry);
   localStorage.setItem(LS_KEY, JSON.stringify(db));
 }
 
+// merged initiale Kommentare (aus books.js) + lokale aus LS
 function getMergedComments(b) {
   const db = loadLocalComments();
   const local = db[b.slug] || [];
-  // initial comments aus books.js zuerst, dann lokales (so bleiben originale als "Quelle")
   return [...(b.comments || []), ...local];
 }
 
-// --- Rate-Limit pro Buch (Slug) -------------------------------------------
-/*
-  RATE_MS verhindert Flooding pro Buch.
-  _rateDB/_saveRateDB lesen/schreiben ein kleines registry-Objekt in localStorage.
-  canPost(stub) prüft, stampPost setzt timestamp.
-*/
+// --- Rate-Limit pro Buch ---------------------------------------------------
 const RATE_MS  = 10_000;                 // 10 Sekunden zwischen Posts je Buch
 const RATE_KEY = 'bookstore_rate_v1';
 
@@ -105,16 +90,12 @@ function secondsRemaining(slug) {
   return Math.max(0, Math.ceil(left / 1000));
 }
 
-// --- Render Liste (Thumbnails) --------------------------------------------
-/*
-  renderThumbs() baut GRID via bookCard(template) auf.
-  Wichtig: Click-Delegation einmalig binden (Flag in dataset verhindert doppelte Listener).
-*/
+// --- Kartenliste rendern ---------------------------------------------------
 function renderThumbs() {
-  // benutze dein template(bookCard) - muss global verfügbar sein (window.bookCard)
+  // bookCard kommt global aus template.js (window.bookCard)
   GRID.innerHTML = books.map((b, i) => bookCard(b, i)).join('');
 
-  // Click-Delegation nur EINMAL binden (Verhindert mehrfaches Anhängen)
+  // Click-Delegation nur EINMAL binden (Flag verhindert Doppelt-Listener)
   if (!GRID.dataset.bound) {
     GRID.addEventListener('click', (e) => {
       const card = e.target.closest('.book-card');
@@ -127,20 +108,16 @@ function renderThumbs() {
 }
 
 // --- Dialog öffnen ---------------------------------------------------------
-/*
-  openByIndex(i) sucht das Buch, merged lokale Kommentare und setzt den Dialogcontent.
-  Wir benachrichtigen per Toast und rufen showModal() auf.
-*/
 function openByIndex(i) {
   const b = books[i];
   if (!b) return;
 
+  // WICHTIG: mit gemergten Kommentaren rendern
   const bWithComments = { ...b, comments: getMergedComments(b) };
 
   showToast(`„${bWithComments.name}“ geöffnet • ${bWithComments.comments.length} Kommentar(e)`, 'info', 1600);
 
-  // sehr wichtig: benutze bookDialog(bWithComments) (nicht bookDialog(b))
-  CONTENT.innerHTML = bookDialog(bWithComments);
+  CONTENT.innerHTML = bookDialog(bWithComments); // bookDialog kommt global aus template.js
   DIALOG.showModal();
 }
 
@@ -149,37 +126,39 @@ DIALOG.addEventListener('click', (e) => {
   if (e.target === DIALOG) DIALOG.close();
 });
 
-// --- Kommentar-Submit (delegiert) -----------------------------------------
-/*
-  Delegiertes submit: fängt jede comment-form im Dialog.
-  Prüft canPost(slug) und speichert lokal, dann stampPost(slug) und rendert Dialog neu.
-*/
+// --- Kommentar absenden (delegierter Submit, FormData!) -------------------
 document.addEventListener('submit', (e) => {
   const form = e.target.closest('.comment-form');
   if (!form) return;
-  e.preventDefault(); // wichtig: verhindern, dass Browser default-Submit läuft
+  e.preventDefault(); // verhindert, dass der Browser ein echtes Form-Submit macht
 
-  const name = form.name.value.trim();
-  const text = form.comment.value.trim();
+  // Werte sicher auslesen (kein name/comment Property-Conflict)
+  const fd   = new FormData(form);
+  const name = String(fd.get('name') || '').trim();
+  const text = String(fd.get('comment') || '').trim();
   const slug = form.dataset.slug || '';
-  if (!name || !text || !slug) return;
 
-  // Rate-Limit pro Buch prüfen
-  if (!canPost(slug)) {
-    showToast(`Bitte warte ${secondsRemaining(slug)}s, bevor du erneut für dieses Buch postest.`, 'warn', 2200);
+  if (!name || !text || !slug) {
+    showToast('Bitte Name und Kommentar ausfüllen.', 'warn', 2000);
     return;
   }
 
-  // speichern (lokal)
+  // Rate-Limit pro Buch prüfen
+  if (!canPost(slug)) {
+    showToast(`Bitte warte ${secondsRemaining(slug)}s, bevor du erneut postest.`, 'warn', 2200);
+    return;
+  }
+
+  // Speichern (nur lokal)
   saveLocalComment(slug, { name, comment: text });
   stampPost(slug);
   form.reset();
   showToast('Kommentar gespeichert (nur lokal)', 'success', 2200);
 
-  // Dialog neu öffnen, damit der neue Kommentar sichtbar ist
+  // Dialog neu öffnen, damit der frische Kommentar sichtbar ist
   const idx = books.findIndex(b => (b.slug || '') === slug);
   if (idx !== -1) openByIndex(idx);
 });
 
-// --- Start -----------------------------------------------------------------
+// --- Start ---------------------------------------------------------------
 renderThumbs();
