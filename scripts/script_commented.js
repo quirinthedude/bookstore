@@ -2,9 +2,9 @@
 
 // --- DOM-Grundlagen -------------------------------------------------------
 // Haupt-Referenzen
-const DIALOG  = document.getElementById('book-dialog');          // <dialog>
+const DIALOG = document.getElementById('book-dialog');          // <dialog>
 const CONTENT = DIALOG.querySelector('.dialog-content');         // Container, in den wir bookDialog() setzen
-const GRID    = document.querySelector('.books-grid');           // Grid mit den Karten
+const GRID = document.querySelector('.books-grid');           // Grid mit den Karten
 
 // --- Toasts (dezente Einblendungen) ---------------------------------------
 function ensureToastHost() {
@@ -28,7 +28,7 @@ function showToast(message, type = 'info', ms = 2500) {
   host.appendChild(el);
   requestAnimationFrame(() => el.classList.add('in')); // animiertes Einblenden
 
-  const hideAt   = setTimeout(() => el.classList.remove('in'), ms);
+  const hideAt = setTimeout(() => el.classList.remove('in'), ms);
   const removeAt = setTimeout(() => el.remove(), ms + 400);
 
   // per Klick sofort schließen
@@ -63,7 +63,7 @@ function getMergedComments(b) {
 }
 
 // --- Rate-Limit pro Buch ---------------------------------------------------
-const RATE_MS  = 10_000;                 // 10 Sekunden zwischen Posts je Buch
+const RATE_MS = 10_000;                 // 10 Sekunden zwischen Posts je Buch
 const RATE_KEY = 'bookstore_rate_v1';
 
 function _rateDB() {
@@ -133,7 +133,12 @@ document.addEventListener('submit', (e) => {
   e.preventDefault(); // verhindert, dass der Browser ein echtes Form-Submit macht
 
   // Werte sicher auslesen (kein name/comment Property-Conflict)
-  const fd   = new FormData(form);
+  const fd = new FormData(form);
+  console.log('submit', {
+    slug: form.dataset.slug,
+    name: fd.get('name'),
+    comment: fd.get('comment')
+  });
   const name = String(fd.get('name') || '').trim();
   const text = String(fd.get('comment') || '').trim();
   const slug = form.dataset.slug || '';
