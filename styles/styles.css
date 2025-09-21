@@ -244,6 +244,41 @@
   border-radius: 12px;
 }
 
+.title-row { 
+  display:flex; 
+  align-items:center; 
+  gap:8px; 
+}
+
+/* neutrales Herz (hell: schwarz, dunkel: blau) */
+.like-heart { 
+  transition: transform .12s ease; 
+}
+
+.like-btn { 
+  background: none; 
+  border: 0; 
+  padding: 4px; 
+  cursor: pointer; 
+  line-height: 1; 
+}
+
+/* Light: schwarz */
+@media (prefers-color-scheme: light) {
+  .like-heart { color: #111; }
+}
+
+/* Dark: blau */
+@media (prefers-color-scheme: dark) {
+  .like-heart { color: #2563eb; } /* Tailwind 'blue-600' */
+}
+
+/* Liked: rot + kleines Pop */
+.like-btn.is-on .like-heart { 
+  color: #e11d48; 
+  transform: scale(1.08); 
+} /* rose-600 */
+
 /* Responsive: auf schmalen Screens einspaltig */
 @media (max-width: 640px) {
   .dialog-card {

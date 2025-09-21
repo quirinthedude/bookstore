@@ -1,7 +1,7 @@
 // scripts/template.js (global)
 
 const escapeHTML = (s = "") =>
-  String(s).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  String(s).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
 
 // Preis als € mit 2 Nachkommastellen
 const fmtEUR = (n) => Number(n).toFixed(2);
