@@ -6,6 +6,19 @@ const DIALOG = document.getElementById('book-dialog');          // <dialog>
 const CONTENT = DIALOG.querySelector('.dialog-content');         // Container, in den wir bookDialog() setzen
 const GRID = document.querySelector('.books-grid');           // Grid mit den Karten
 
+// little helpers -----------------------------------------------------------
+const LIKE_KEY = 'bookstore_likes_v1';
+function likeDB() { try { return JSON.parse(localStorage.getItem(LIKE_KEY) || '{}'); } catch { return {}; } }
+function setLikeDB(db) { localStorage.setItem(LIKE_KEY, JSON.stringify(db)); }
+function isLiked(slug) { return !!likeDB()[slug]; }
+function toggleLike(slug) {
+  const db = likeDB();
+  if (db[slug]) delete db[slug]; else db[slug] = true;
+  setLikeDB(db);
+  return !!db[slug];
+}
+function displayLikes(b) { return (b.likes || 0) + (isLiked(b.slug) ? 1 : 0); }
+
 // --- Toasts (dezente Einblendungen) ---------------------------------------
 function ensureToastHost() {
   let host = document.getElementById('toast-host');
@@ -139,6 +152,24 @@ function openByIndex(i) {
 
   CONTENT.innerHTML = bookDialog(bWithComments); // bookDialog kommt global aus template.js
   DIALOG.showModal();
+  const slug = b.slug;
+  const likeBtn = CONTENT.querySelector('.like-btn');
+  const likeCount = CONTENT.querySelector('.like-count');
+
+  if (b.slug && likeBtn && likeCount) {
+    const slug = b.slug;
+    likeCount.textContent = displayLikes(b);                 // Seed + ggf. +1
+    const on = isLiked(slug);
+    likeBtn.classList.toggle('is-on', on);
+    likeBtn.setAttribute('aria-pressed', String(on));
+
+    likeBtn.addEventListener('click', () => {
+      const nowOn = toggleLike(slug);
+      likeCount.textContent = displayLikes(b);               // Zahl aktualisieren
+      likeBtn.classList.toggle('is-on', nowOn);
+      likeBtn.setAttribute('aria-pressed', String(nowOn));   // A11y
+    });
+  }
 }
 
 // Backdrop-Klick schließt (UX)

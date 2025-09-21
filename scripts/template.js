@@ -38,7 +38,10 @@ function bookDialog(b) {
 
         <div class="title-row">
           <h2>${escapeHTML(b.name)}</h2>
-          <div class="likes">${b.likes ?? 0} ❤️</div>
+          <span class="like-count">${b.likes ?? 0}</span>
+          <button class="like-btn" data-slug="${b.slug}" aria-pressed="false" aria-label="Gefällt mir">
+            <span class="like-heart" aria-hidden="true">❤</span>
+          </button>
         </div>
 
         <p class="author">von ${escapeHTML(b.author)}</p>
