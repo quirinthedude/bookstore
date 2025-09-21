@@ -118,6 +118,11 @@
   background: #fff2c880;
 }
 
+.btn.is-active {
+  outline: 2px solid currentColor;
+  font-weight: 600;
+}
+
 /* Bücher-Grid (Platzhalter) */
 .books-grid {
   display: grid;
@@ -166,20 +171,26 @@
 
 /* Dialog selbst */
 #book-dialog {
-  width: 75vw;          /* 75% Bildschirmbreite */
-  max-width: 1200px;    /* obere Grenze */
-  max-height: 90dvh;    /* nicht höher als der Bildschirm */
-  margin: auto;         /* zentriert (wichtig nach Reset) */
+  width: 75vw;
+  /* 75% Bildschirmbreite */
+  max-width: 1200px;
+  /* obere Grenze */
+  max-height: 90dvh;
+  /* nicht höher als der Bildschirm */
+  margin: auto;
+  /* zentriert (wichtig nach Reset) */
   padding: 0;
   border: none;
   border-radius: 16px;
-  overflow: hidden;     /* runde Ecken */
+  overflow: hidden;
+  /* runde Ecken */
 }
 
 /* Innenaufbau */
 .dialog-card {
   display: grid;
-  grid-template-columns: 1fr 1fr;  /* links/rechts je 50% */
+  grid-template-columns: 1fr 1fr;
+  /* links/rechts je 50% */
   gap: 24px;
   padding: 24px;
   height: 100%;
@@ -189,13 +200,15 @@
 /* linke Spalte */
 .dialog-info {
   display: grid;
-  grid-template-rows: auto auto auto auto auto 1fr; /* Button, Titelzeile, Autor, Jahr, Genre, Summary */
+  grid-template-rows: auto auto auto auto auto 1fr;
+  /* Button, Titelzeile, Autor, Jahr, Genre, Summary */
   gap: 12px;
 }
 
 /* Warenkorb-Button */
 .dialog-info .cart-btn {
-  background: #2a7;       /* grün, Beispiel */
+  background: #2a7;
+  /* grün, Beispiel */
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -213,14 +226,21 @@
   align-items: center;
 }
 
-.dialog-info h2 { margin: 0; font-size: 1.5rem; }
-.dialog-info .likes { font-size: 1.2rem; }
+.dialog-info h2 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.dialog-info .likes {
+  font-size: 1.2rem;
+}
 
 /* rechte Spalte: Cover */
 .dialog-card img.cover {
   width: 100%;
   height: 100%;
-  object-fit: cover;    /* füllt rechte Spalte */
+  object-fit: cover;
+  /* füllt rechte Spalte */
   border-radius: 12px;
 }
 
@@ -229,11 +249,13 @@
   .dialog-card {
     grid-template-columns: 1fr;
   }
+
   .dialog-card img.cover {
     width: 100%;
     height: auto;
   }
 }
+
 button.close {
   position: absolute;
   top: 12px;
@@ -261,6 +283,7 @@ button.close {
 button.close:hover {
   filter: saturate(1.06) brightness(1.02);
 }
+
 button.close:active {
   transform: translateY(1px);
   box-shadow: 0 1px 0 var(--color-accent-dark);
@@ -278,9 +301,12 @@ button.close:focus-visible {
   padding: 0;
   display: grid;
   gap: 8px;
-  max-height: 28dvh;     /* ~ ein gutes Stück des Dialogs */
-  overflow: auto;        /* Scrollbar bei langen Listen */
-  padding-right: 6px;    /* Platz für Scrollbar */
+  max-height: 28dvh;
+  /* ~ ein gutes Stück des Dialogs */
+  overflow: auto;
+  /* Scrollbar bei langen Listen */
+  padding-right: 6px;
+  /* Platz für Scrollbar */
 }
 
 .dialog-info .comments li {
@@ -290,28 +316,36 @@ button.close:focus-visible {
   padding: 8px 10px;
   line-height: 1.3;
 }
+
 /* Firefox (global) */
 * {
-  scrollbar-width: thin; /* auto | thin | none */
-  scrollbar-color: var(--color-accent-red) #00000012; /* thumb | track */
+  scrollbar-width: thin;
+  /* auto | thin | none */
+  scrollbar-color: var(--color-accent-red) #00000012;
+  /* thumb | track */
 }
 
 /* WebKit-Browser (Chrome/Edge/Safari/Opera) */
 *::-webkit-scrollbar {
-  width: 10px;               /* vertikal */
-  height: 10px;              /* horizontal */
+  width: 10px;
+  /* vertikal */
+  height: 10px;
+  /* horizontal */
 }
 
 *::-webkit-scrollbar-track {
-  background: #00000010;     /* zarter Track */
+  background: #00000010;
+  /* zarter Track */
   border-radius: 12px;
 }
 
 *::-webkit-scrollbar-thumb {
   background: linear-gradient(180deg, var(--color-accent-red), #8e1b1b);
-  border: 2px solid #00000010; /* sorgt für „Luft“ um den Thumb */
+  border: 2px solid #00000010;
+  /* sorgt für „Luft“ um den Thumb */
   border-radius: 12px;
-  box-shadow: inset 0 1px 0 #ffffff66; /* leichter Relief-Effekt */
+  box-shadow: inset 0 1px 0 #ffffff66;
+  /* leichter Relief-Effekt */
 }
 
 *::-webkit-scrollbar-thumb:hover {
@@ -321,6 +355,7 @@ button.close:focus-visible {
 *::-webkit-scrollbar-corner {
   background: transparent;
 }
+
 .dialog-scroll:focus-visible::-webkit-scrollbar-thumb {
   background: linear-gradient(180deg, var(--color-accent-gold), #b88912);
 }
@@ -333,27 +368,34 @@ button.close:focus-visible {
 /* Kommentarformular: 2 Spalten, Label links – Felder rechts, top-aligned */
 .comment-form {
   display: grid;
-  grid-template-columns: 140px 1fr; /* Labelbreite | Feld */
+  grid-template-columns: 140px 1fr;
+  /* Labelbreite | Feld */
   column-gap: 12px;
   row-gap: 10px;
 
-  margin-top: 14px;      /* Abstand über dem Formular */
+  margin-top: 14px;
+  /* Abstand über dem Formular */
   padding-top: 12px;
   border-top: 1px solid #00000018;
 }
 
 .comment-form h4 {
-  grid-column: 1 / -1;   /* Überschrift über beide Spalten */
-  margin: 0 0 8px 0;     /* 1 Zeile Luft darunter */
+  grid-column: 1 / -1;
+  /* Überschrift über beide Spalten */
+  margin: 0 0 8px 0;
+  /* 1 Zeile Luft darunter */
 }
 
 .comment-form label {
-  display: contents;     /* Label-Text in Spalte 1, Felder in Spalte 2 */
+  display: contents;
+  /* Label-Text in Spalte 1, Felder in Spalte 2 */
 }
 
-.comment-form label > span {
-  align-self: start;      /* Label-Text oben ausrichten */
-  padding-top: 6px;       /* optische Linie mit Feldoberkante */
+.comment-form label>span {
+  align-self: start;
+  /* Label-Text oben ausrichten */
+  padding-top: 6px;
+  /* optische Linie mit Feldoberkante */
 }
 
 .comment-form input,
@@ -364,18 +406,23 @@ button.close:focus-visible {
   border: 1px solid #00000022;
   border-radius: 8px;
   background: #fffdf7;
-  resize: vertical;       /* Textarea höhenverstellbar */
+  resize: vertical;
+  /* Textarea höhenverstellbar */
   line-height: 1.35;
 }
 
 .comment-form .btn[type="submit"] {
-  grid-column: 2;         /* Button unter den Feldern, rechtsbündig */
-  justify-self: start;    /* oder 'end' für rechtsbündig */
-  margin-top: 8px;        /* 1 Zeile Luft zum Eingabefeld */
+  grid-column: 2;
+  /* Button unter den Feldern, rechtsbündig */
+  justify-self: start;
+  /* oder 'end' für rechtsbündig */
+  margin-top: 8px;
+  /* 1 Zeile Luft zum Eingabefeld */
 }
 
 .comment-form .hint {
-  grid-column: 2;         /* Hinweis unter dem Button / den Feldern */
+  grid-column: 2;
+  /* Hinweis unter dem Button / den Feldern */
   color: #00000080;
   margin-top: 4px;
 }

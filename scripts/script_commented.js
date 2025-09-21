@@ -91,11 +91,31 @@ function secondsRemaining(slug) {
 }
 
 // --- Kartenliste rendern ---------------------------------------------------
-function renderThumbs() {
-  // bookCard kommt global aus template.js (window.bookCard)
-  GRID.innerHTML = books.map((b, i) => bookCard(b, i)).join('');
+// function renderThumbs() {
+//   // bookCard kommt global aus template.js (window.bookCard)
+//   GRID.innerHTML = books.map((b, i) => bookCard(b, i)).join('');
 
-  // Click-Delegation nur EINMAL binden (Flag verhindert Doppelt-Listener)
+//   // Click-Delegation nur EINMAL binden (Flag verhindert Doppelt-Listener)
+//   if (!GRID.dataset.bound) {
+//     GRID.addEventListener('click', (e) => {
+//       const card = e.target.closest('.book-card');
+//       if (!card) return;
+//       const i = Number(card.dataset.index);
+//       if (!Number.isNaN(i)) openByIndex(i);
+//     });
+//     GRID.dataset.bound = '1';
+//   }
+// }
+
+// alt:
+// function renderThumbs() {
+// neu:
+function renderBooks(list = books) {
+  GRID.innerHTML = list.map((b) => {
+    const i = books.findIndex(x => (x.slug || x.name) === (b.slug || b.name));
+    return bookCard(b, i); // <-- Originalindex!
+  }).join('');
+
   if (!GRID.dataset.bound) {
     GRID.addEventListener('click', (e) => {
       const card = e.target.closest('.book-card');
@@ -166,4 +186,5 @@ document.addEventListener('submit', (e) => {
 });
 
 // --- Start ---------------------------------------------------------------
-renderThumbs();
+renderBooks(books);
+window.renderBooks = renderBooks;

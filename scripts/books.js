@@ -161,3 +161,5 @@ let books = [
     ]
   }
 ];
+window.books = books;
+
