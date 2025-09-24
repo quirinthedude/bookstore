@@ -33,6 +33,7 @@
   grid-area: header;
   display: flex;
   align-items: center;
+  justify-content: space-between;
 }
 
 .footer {
@@ -460,4 +461,29 @@ button.close:focus-visible {
   /* Hinweis unter dem Button / den Feldern */
   color: #00000080;
   margin-top: 4px;
+}
+
+.cart-button {
+  margin-left: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.cart-badge {
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font: 700 12px/1 ui-sans-serif, system-ui;
+  color: #fff;
+  background: linear-gradient(180deg, var(--color-accent-red), #8e1b1b);
+  box-shadow: 0 1px 0 #00000030, inset 0 1px 0 #ffffff66;
 }

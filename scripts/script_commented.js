@@ -103,26 +103,6 @@ function secondsRemaining(slug) {
   return Math.max(0, Math.ceil(left / 1000));
 }
 
-// --- Kartenliste rendern ---------------------------------------------------
-// function renderThumbs() {
-//   // bookCard kommt global aus template.js (window.bookCard)
-//   GRID.innerHTML = books.map((b, i) => bookCard(b, i)).join('');
-
-//   // Click-Delegation nur EINMAL binden (Flag verhindert Doppelt-Listener)
-//   if (!GRID.dataset.bound) {
-//     GRID.addEventListener('click', (e) => {
-//       const card = e.target.closest('.book-card');
-//       if (!card) return;
-//       const i = Number(card.dataset.index);
-//       if (!Number.isNaN(i)) openByIndex(i);
-//     });
-//     GRID.dataset.bound = '1';
-//   }
-// }
-
-// alt:
-// function renderThumbs() {
-// neu:
 function renderBooks(list = books) {
   GRID.innerHTML = list.map((b) => {
     const i = books.findIndex(x => (x.slug || x.name) === (b.slug || b.name));
