@@ -5,6 +5,7 @@
 const DIALOG = document.getElementById('book-dialog');          // <dialog>
 const CONTENT = DIALOG.querySelector('.dialog-content');         // Container, in den wir bookDialog() setzen
 const GRID = document.querySelector('.books-grid');           // Grid mit den Karten
+const CART_KEY = 'bookstore_cart_v1';
 
 // little helpers -----------------------------------------------------------
 const LIKE_KEY = 'bookstore_likes_v1';
@@ -150,6 +151,15 @@ function openByIndex(i) {
       likeBtn.setAttribute('aria-pressed', String(nowOn));   // A11y
     });
   }
+    const cartBtn = CONTENT.querySelector('.cart-btn'); // existiert im Dialog-Template
+  if (cartBtn && b.slug) {
+    cartBtn.addEventListener('click', () => {
+      addToCart(b.slug, 1);
+      updateCartBadge();
+      showToast(`„${b.name}“ in den Warenkorb gelegt.`, 'success', 1600);
+    });
+  }
+
 }
 
 // Backdrop-Klick schließt (UX)
@@ -196,6 +206,60 @@ document.addEventListener('submit', (e) => {
   if (idx !== -1) openByIndex(idx);
 });
 
+// --- Warenkorb (LocalStorage) ---------------------------------------------
+function cartDB() {
+  try {
+    return JSON.parse(localStorage.getItem(CART_KEY) || '{}')
+  }
+  catch {
+    return {};
+  }
+}
+
+function setCartDB(db) {
+  localStorage.setItem(CART_KEY, JSON.stringify(db));
+}
+
+function addToCart(slug, qty = 1) {
+  if(!slug) return 0;
+  const db = cartDB;
+  db[slug] = (db[slug] || 0)+ qty;
+  setCartDB();
+  return db[slug];
+}
+
+function addToCart(slug, qty = 1) {
+  if (!slug) return 0;
+  const db = cartDB();                      // <-- () !
+  db[slug] = (Number(db[slug]) || 0) + Number(qty);
+  setCartDB(db);                            // <-- db übergeben
+  return db[slug];
+}
+
+
+function cartCount() {
+  const db = cartDB();
+  return Object.values(db).reduce((sum, n) => sum + (Number(n) || 0), 0);
+}
+
+function updateCartBadge() {
+  const badge = document.getElementById('cart-badge');
+  const btn   = document.getElementById('cart-button'); // <-- richtige ID (index.html)
+  if (!badge || !btn) return;
+
+  const n = cartCount();
+  if (n > 0) {
+    badge.textContent = String(n);
+    badge.hidden = false;
+    btn.setAttribute('aria-label', `Warenkorb, ${n} Artikel`);
+  } else {
+    badge.hidden = true;
+    btn.setAttribute('aria-label', 'Warenkorb, leer');
+  }
+}
 // --- Start ---------------------------------------------------------------
 renderBooks(books);
 window.renderBooks = renderBooks;
+updateCartBadge();
+window.updateCartBadge = updateCartBadge; // optional fürs Debuggen
+
